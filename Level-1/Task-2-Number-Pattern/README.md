@@ -1,5 +1,5 @@
-# Task 2 - Number Pattern
+# Task 2 — Number Pattern
 
-Generates a simple number pyramid using loops.
+C++ number pyramid generator using nested loops.
 
-Run: `python main.py`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
