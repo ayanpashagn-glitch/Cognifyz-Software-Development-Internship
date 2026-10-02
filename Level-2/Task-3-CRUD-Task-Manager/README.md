@@ -1,5 +1,5 @@
-# Task 3 - CRUD Task Manager
+# Task 3 — CRUD Task Manager
 
-Console application implementing Create, Read, Update and Delete using a Python list.
+C++ console CRUD application using a `Task` class. Supports Create, Read, Update and Delete.
 
-Run: `python main.py`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
