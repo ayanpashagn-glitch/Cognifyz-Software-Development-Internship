@@ -1,7 +1,5 @@
-# Task 5 - Persistent CRUD
+# Task 5 — Persistent CRUD
 
-Extends the CRUD task manager with text-file persistence and file error handling.
+C++ CRUD task manager with a `Task` class, persistent `tasks.txt` storage, and file error handling.
 
-`tasks.txt` is automatically created after saving data.
-
-Run: `python main.py`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
