@@ -1,32 +1,34 @@
 #include <iostream>
 #include <iomanip>
+using namespace std;
 
 int main() {
-    std::cout << "=== Temperature Converter ===\n";
-    std::cout << "1. Celsius to Fahrenheit\n";
-    std::cout << "2. Fahrenheit to Celsius\n";
-    std::cout << "Choose: ";
+    cout << "=== Temperature Converter ===\n";
+    cout << "1. Celsius to Fahrenheit\n";
+    cout << "2. Fahrenheit to Celsius\n";
+    cout << "Choose: ";
 
     int choice;
-    std::cin >> choice;
+    cin >> choice;
 
     double temperature;
-    std::cout << "Temperature: ";
-    if (!(std::cin >> temperature)) {
-        std::cout << "Invalid temperature.\n";
+    cout << "Temperature: ";
+    if (!(cin >> temperature)) {
+        cout << "Invalid temperature.\n";
         return 0;
     }
 
-    std::cout << std::fixed << std::setprecision(2);
+    cout << fixed << setprecision(2);
 
     if (choice == 1) {
         double fahrenheit = temperature * 9.0 / 5.0 + 32.0;
-        std::cout << temperature << " C = " << fahrenheit << " F\n";
+        cout << temperature << " C = " << fahrenheit << " F\n";
     } else if (choice == 2) {
         double celsius = (temperature - 32.0) * 5.0 / 9.0;
-        std::cout << temperature << " F = " << celsius << " C\n";
+        cout << temperature << " F = " << celsius << " C\n";
     } else {
-        std::cout << "Invalid option.\n";
+        cout << "Invalid option.\n";
     }
+
     return 0;
 }
