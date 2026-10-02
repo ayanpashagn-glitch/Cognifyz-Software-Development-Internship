@@ -1,9 +1,7 @@
-# Task 6 - Interactive Web Scraper
+# Task 6 — Interactive Web Scraper
 
-Fetches a public website and presents its title, headings and links.
+C++ interactive scraper that accepts a public URL, fetches it with the system `curl` command, and displays the page title, headings and links.
 
-Install: `pip install -r requirements.txt`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
 
-Run: `python main.py`
-
-Only scrape websites where automated access is permitted.
+Only use on websites where automated access is permitted.
