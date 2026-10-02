@@ -1,5 +1,5 @@
-# Task 1 - Text-Based Game
+# Task 1 — Text-Based Game
 
-A number guessing game using conditional statements and user input.
+C++ number guessing game using conditional statements and loops.
 
-Run: `python main.py`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
