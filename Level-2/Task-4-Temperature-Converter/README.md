@@ -1,5 +1,5 @@
-# Task 4 - Temperature Converter
+# Task 4 — Temperature Converter
 
-Converts Celsius to Fahrenheit and Fahrenheit to Celsius.
+C++ Celsius/Fahrenheit converter.
 
-Run: `python main.py`
+Compile: `g++ main.cpp -std=c++17 -o app.exe`
