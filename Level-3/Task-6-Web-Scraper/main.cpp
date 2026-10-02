@@ -1,92 +1,177 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <fstream>
+#include <cstdlib>
 #include <cstdio>
-#include <array>
 
-std::string fetchPage(const std::string& url) {
-#ifdef _WIN32
-    std::string command = "curl.exe -L --max-time 20 -A \"CognifyzEducationalScraper/1.0\" \"" + url + "\" 2>nul";
-    FILE* pipe = _popen(command.c_str(), "r");
-#else
-    std::string command = "curl -L --max-time 20 -A \"CognifyzEducationalScraper/1.0\" \"" + url + "\" 2>/dev/null";
-    FILE* pipe = popen(command.c_str(), "r");
-#endif
+using namespace std;
 
-    if (!pipe) return "";
+string fetchPage(const string& url) {
+    const string fileName = "page.html";
 
-    std::array<char, 4096> buffer{};
-    std::string result;
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe) != nullptr) {
-        result += buffer.data();
+    string command =
+        "curl.exe -L --max-time 20 "
+        "-A \"CognifyzEducationalScraper/1.0\" "
+        "-o \"" + fileName + "\" \"" + url + "\"";
+
+    int result = system(command.c_str());
+
+    if (result != 0) {
+        return "";
     }
 
-#ifdef _WIN32
-    _pclose(pipe);
-#else
-    pclose(pipe);
-#endif
-    return result;
+    ifstream file(fileName, ios::in | ios::binary);
+
+    if (!file.is_open()) {
+        return "";
+    }
+
+    string html(
+        (istreambuf_iterator<char>(file)),
+        istreambuf_iterator<char>()
+    );
+
+    file.close();
+    remove(fileName.c_str());
+
+    return html;
 }
 
-std::string stripTags(const std::string& html) {
-    std::string text = std::regex_replace(html, std::regex("<[^>]*>"), "");
-    text = std::regex_replace(text, std::regex("\\s+"), " ");
+string stripTags(const string& html) {
+    string text = regex_replace(
+        html,
+        regex("<[^>]*>"),
+        ""
+    );
+
+    text = regex_replace(
+        text,
+        regex("\\s+"),
+        " "
+    );
+
     return text;
 }
 
 int main() {
-    std::cout << "=== Interactive Web Scraper ===\n";
-    std::cout << "Enter a public http/https URL: ";
+    cout << "=== Interactive Web Scraper ===\n";
+    cout << "Enter a public http/https URL: ";
 
-    std::string url;
-    std::getline(std::cin, url);
+    string url;
+    getline(cin, url);
 
-    if (url.rfind("http://", 0) != 0 && url.rfind("https://", 0) != 0) {
-        std::cout << "Invalid URL. Use http:// or https://\n";
+    if (
+        url.rfind("http://", 0) != 0 &&
+        url.rfind("https://", 0) != 0
+    ) {
+        cout << "Invalid URL. Use http:// or https://\n";
         return 0;
     }
 
-    std::string html = fetchPage(url);
+    cout << "\nFetching website...\n";
+
+    string html = fetchPage(url);
+
     if (html.empty()) {
-        std::cout << "Request failed or returned no content.\n";
+        cout << "Request failed or returned no content.\n";
         return 0;
     }
 
-    std::smatch match;
-    std::regex titleRegex("<title[^>]*>([\\s\\S]*?)</title>", std::regex::icase);
-    if (std::regex_search(html, match, titleRegex)) {
-        std::cout << "\nTitle:\n" << stripTags(match[1].str()) << "\n";
+    smatch match;
+
+    regex titleRegex(
+        "<title[^>]*>([\\s\\S]*?)</title>",
+        regex::icase
+    );
+
+    cout << "\nTitle:\n";
+
+    if (regex_search(html, match, titleRegex)) {
+        cout << stripTags(match[1].str()) << "\n";
     } else {
-        std::cout << "\nTitle:\nNo title found.\n";
+        cout << "No title found.\n";
     }
 
-    std::cout << "\nHeadings:\n";
-    std::regex headingRegex("<h[1-3][^>]*>([\\s\\S]*?)</h[1-3]>", std::regex::icase);
-    auto headingBegin = std::sregex_iterator(html.begin(), html.end(), headingRegex);
-    auto headingEnd = std::sregex_iterator();
+    cout << "\nHeadings:\n";
+
+    regex headingRegex(
+        "<h[1-3][^>]*>([\\s\\S]*?)</h[1-3]>",
+        regex::icase
+    );
+
+    auto headingBegin =
+        sregex_iterator(
+            html.begin(),
+            html.end(),
+            headingRegex
+        );
+
+    auto headingEnd = sregex_iterator();
 
     int count = 0;
-    for (auto it = headingBegin; it != headingEnd && count < 20; ++it) {
-        std::string heading = stripTags((*it)[1].str());
-        if (!heading.empty()) std::cout << (++count) << ". " << heading << "\n";
-    }
-    if (count == 0) std::cout << "No headings found.\n";
 
-    std::cout << "\nLinks:\n";
-    std::regex linkRegex("<a[^>]*href=[\"']([^\"']+)[\"'][^>]*>([\\s\\S]*?)</a>", std::regex::icase);
-    auto linkBegin = std::sregex_iterator(html.begin(), html.end(), linkRegex);
-    auto linkEnd = std::sregex_iterator();
+    for (
+        auto it = headingBegin;
+        it != headingEnd && count < 20;
+        ++it
+    ) {
+        string heading =
+            stripTags((*it)[1].str());
 
-    count = 0;
-    for (auto it = linkBegin; it != linkEnd && count < 20; ++it) {
-        std::string href = (*it)[1].str();
-        std::string textValue = stripTags((*it)[2].str());
-        if (!textValue.empty()) {
-            std::cout << (++count) << ". " << textValue << " -> " << href << "\n";
+        if (!heading.empty()) {
+            cout
+                << ++count
+                << ". "
+                << heading
+                << "\n";
         }
     }
-    if (count == 0) std::cout << "No links found.\n";
+
+    if (count == 0) {
+        cout << "No headings found.\n";
+    }
+
+    cout << "\nLinks:\n";
+
+    regex linkRegex(
+        "<a[^>]*href=[\"']([^\"']+)[\"'][^>]*>([\\s\\S]*?)</a>",
+        regex::icase
+    );
+
+    auto linkBegin =
+        sregex_iterator(
+            html.begin(),
+            html.end(),
+            linkRegex
+        );
+
+    auto linkEnd = sregex_iterator();
+
+    count = 0;
+
+    for (
+        auto it = linkBegin;
+        it != linkEnd && count < 20;
+        ++it
+    ) {
+        string href = (*it)[1].str();
+        string linkText = stripTags((*it)[2].str());
+
+        if (!linkText.empty()) {
+            cout
+                << ++count
+                << ". "
+                << linkText
+                << " -> "
+                << href
+                << "\n";
+        }
+    }
+
+    if (count == 0) {
+        cout << "No links found.\n";
+    }
 
     return 0;
 }
